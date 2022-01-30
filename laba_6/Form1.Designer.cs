@@ -28,14 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.moveTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
-            // 
-            // moveTimer
-            // 
-            this.moveTimer.Interval = 20;
-            this.moveTimer.Tick += new System.EventHandler(this.moveTimerEvent);
             // 
             // Form1
             // 
@@ -46,14 +39,12 @@
             this.Text = "Form1";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Timer moveTimer;
     }
 }
 

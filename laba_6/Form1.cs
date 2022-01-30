@@ -16,24 +16,50 @@ namespace laba_6
 		Graphics g;
 		Color colorForm = Color.Thistle; // цвет фона
 
-		bool moveRight, moveLeft, moveUp, moveDown;
-		int speed = 10;
-
 		public Form1()
 		{
 			InitializeComponent();
 			myStorage = new MyStorage(10);
+			Size = new System.Drawing.Size(700, 500);
 
 		}
 
-		private void Form1_Paint(object sender, PaintEventArgs e)
+        private void Form1_MouseClick(object sender, MouseEventArgs e)
+        {
+			Point click;
+			click = e.Location;
+			int choiceCircle = myStorage.checkCoord(click.X, click.Y);
+
+			if (Control.ModifierKeys == Keys.Control)
+			{
+				if (choiceCircle != -1) // попадаем в круг
+				{
+					myStorage.setSelected(choiceCircle);
+					myStorage.callShowMethod(g);
+				}
+			}
+			else
+			{
+				if (choiceCircle != -1) // попадаем в круг
+				{
+					myStorage.unSelectedObject();
+					myStorage.setSelected(choiceCircle);
+					myStorage.callShowMethod(g);
+				}
+				else
+				{
+					myStorage.setCircle(g, click.X, click.Y);
+				}
+			}
+		}
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
 		{
 			g = CreateGraphics();
 			g.Clear(colorForm);
 			myStorage.callShowMethod(g);
+		}		
 
-		}
-				
 
 		private void Form1_KeyDown(object sender, KeyEventArgs e)
 		{
@@ -43,10 +69,6 @@ namespace laba_6
 				g.Clear(colorForm);
 				myStorage.callShowMethod(g);
 			}
-
-
-
-
 
 			if (e.KeyCode == Keys.D1)
             {
@@ -73,80 +95,41 @@ namespace laba_6
 					{
 						myStorage.setCircle(g, X, Y);
 					}
-				}
-				
-
+				}				
 			}
-
-
 
 			if (e.KeyCode == Keys.Left)
 			{
-				moveLeft = true;
+				myStorage.leftSelected();
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
 			}
 			if (e.KeyCode == Keys.Right)
 			{
-				moveRight = true;
+				myStorage.rightSelected(ClientSize.Width);
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
 			}
 			if (e.KeyCode == Keys.Up)
 			{
-				moveUp = true;
+				myStorage.upSelected();
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
 			}
 			if (e.KeyCode == Keys.Down)
 			{
-				moveDown = true;
-			}
+				myStorage.downSelected(ClientSize.Height);
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
+			}			
 		}
-
-        private void moveTimerEvent(object sender, EventArgs e)
-        {
-			int X = 50, Y = 50;
-			int choiceCircle = myStorage.checkCoord(X, Y);
-
-			if (moveLeft == true) //и не выходить зарамки формы)
-            {
-				choiceCircle = myStorage.checkCoord(X + speed, Y);//обьект += speed;
-			}
-			if (moveRight == true)
-			{
-				//обьект += speed;
-			}
-			if (moveUp == true)
-			{
-				//обьект += speed;
-			}
-			if (moveDown == true)
-			{
-				//обьект += speed;
-			}
-
-		}
-
-        private void Form1_KeyUp(object sender, KeyEventArgs e)
-        {
-			if (e.KeyCode == Keys.Left)
-			{
-				moveLeft = false;
-			}
-			if (e.KeyCode == Keys.Right)
-			{
-				moveRight = false;
-			}
-			if (e.KeyCode == Keys.Up)
-			{
-				moveUp = false;
-			}
-			if (e.KeyCode == Keys.Down)
-			{
-				moveDown = false;
-			}
-		}
-    }
+	}
 
 
 
-    public class CCircle
+	public class CCircle
 	{
+		public int speed = 10;
 		public int x;
 		public int y;
 		public int r;
@@ -159,7 +142,34 @@ namespace laba_6
 			this.x = x - r;
 			this.y = y - r;
 			selected = true;
+		}
 
+		// функция, двигающая круг влево
+		public void left() 
+        {
+			if (x-speed > 0)
+			this.x = this.x - speed;
+        }
+
+		// функция, двигающая круг вправо
+		public void right(int formRight)
+		{
+			if (this.x + r + r + speed < formRight)
+				this.x = this.x + speed;
+		}
+
+		// функция, двигающая круг вверх
+		public void up()
+		{
+			if (y-speed > 0)
+			this.y = this.y - speed;
+		}
+
+		// функция, двигающая круг вниз
+		public void down(int formDown)
+		{
+			if (this.y + r + r + speed < formDown)
+				this.y = this.y + speed;
 		}
 
 		// функция рисует круг
@@ -176,6 +186,7 @@ namespace laba_6
 
 			g.DrawEllipse(pen, x, y, r + r, r + r);
 		}
+				
 
 		// помечает объект как не выбранный
 		public void unSelected()
@@ -222,6 +233,54 @@ namespace laba_6
 				this.storage[i] = null;
 			}
 			this.size = size;
+		}
+
+		//функция, двигающая все выбранные круги влево
+		public void leftSelected() 
+		{
+			for (int i = 0; i < size; i++)
+            {
+				if (storage[i]!=null && storage[i].isSelected())
+                {
+					this.storage[i].left();
+                }
+            }
+		}
+
+		//функция, двигающая все выбранные круги вправо
+		public void rightSelected(int formRight)
+		{
+			for (int i = 0; i < size; i++)
+			{
+				if (storage[i] != null && storage[i].isSelected())
+				{
+					this.storage[i].right(formRight);
+				}
+			}
+		}
+
+		//функция, двигающая все выбранные круги вверх
+		public void upSelected()
+		{
+			for (int i = 0; i < size; i++)
+			{
+				if (storage[i] != null && storage[i].isSelected())
+				{
+					this.storage[i].up();
+				}
+			}
+		}
+
+		//функция, двигающая все выбранные круги вниз
+		public void downSelected(int formDown)
+		{
+			for (int i = 0; i < size; i++)
+			{
+				if (storage[i] != null && storage[i].isSelected())
+				{
+					this.storage[i].down(formDown);
+				}
+			}
 		}
 
 		// получить размер хранилища
