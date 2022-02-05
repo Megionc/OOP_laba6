@@ -121,7 +121,21 @@ namespace laba_6
 				myStorage.downSelected(ClientSize.Height);
 				g.Clear(colorForm);
 				myStorage.callShowMethod(g);
-			}			
+			}
+			
+			if (Control.ModifierKeys == Keys.Control && e.KeyCode == Keys.Up)
+			{
+				myStorage.increaseSelected(ClientSize.Width, ClientSize.Height);
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
+			}
+
+			if (Control.ModifierKeys == Keys.Control && e.KeyCode == Keys.Down)
+			{
+				myStorage.decreaseSelected();
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
+			}
 		}
 	}
 
@@ -170,6 +184,21 @@ namespace laba_6
 		{
 			if (this.y + r + r + speed < formDown)
 				this.y = this.y + speed;
+		}
+
+		//функция, увеличивающая круг
+		public void increase(int formUpX, int formUpY)
+        {
+			if (this.x + r + r + speed < formUpX)
+				if (this.y + r + r + speed < formUpY)
+						this.r = this.r + speed;
+		}
+
+		// функция, уменьшающая круг
+		public void decrease()
+        {
+			if (this.r - speed > 0)
+				this.r = this.r - speed;
 		}
 
 		// функция рисует круг
@@ -234,7 +263,7 @@ namespace laba_6
 			}
 			this.size = size;
 		}
-
+				
 		//функция, двигающая все выбранные круги влево
 		public void leftSelected() 
 		{
@@ -279,6 +308,30 @@ namespace laba_6
 				if (storage[i] != null && storage[i].isSelected())
 				{
 					this.storage[i].down(formDown);
+				}
+			}
+		}
+
+		//функция, увеливающая все выбранные круги
+		public void increaseSelected(int formX, int formY)
+		{
+			for (int i = 0; i < size; i++)
+			{
+				if (storage[i] != null && storage[i].isSelected())
+				{
+					this.storage[i].increase(formX, formY);
+				}
+			}
+		}
+
+		//функция, уменьшающая все выбранные круги
+		public void decreaseSelected()
+		{
+			for (int i = 0; i < size; i++)
+			{
+				if (storage[i] != null && storage[i].isSelected())
+				{
+					this.storage[i].decrease();
 				}
 			}
 		}
