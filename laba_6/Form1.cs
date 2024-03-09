@@ -26,6 +26,117 @@ namespace laba_6
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
+			
+		}
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+		{
+			g = panel1.CreateGraphics();
+			g.Clear(colorForm);
+			myStorage.callShowMethod(g);
+		}		
+
+
+		private void Form1_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyData == Keys.Delete)
+			{
+				myStorage.deleteSelectedObject();
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
+			}
+
+			if (e.KeyCode == Keys.D1)
+			{
+				int X = 50, Y = 50;
+				int choiceCircle = myStorage.checkCoord(X, Y);
+
+				if (Control.ModifierKeys == Keys.Control)
+				{
+					if (choiceCircle != -1) // попадаем в круг
+					{
+						myStorage.setSelected(choiceCircle);
+						myStorage.callShowMethod(g);
+					}
+				}
+				else
+				{
+					if (choiceCircle != -1) // попадаем в круг
+					{
+						myStorage.unSelectedObject();
+						myStorage.setSelected(choiceCircle);
+						myStorage.callShowMethod(g);
+					}
+					else
+					{
+						myStorage.setCObject(g, new CCircle(X, Y));
+					}
+				}
+			}
+
+			if (e.KeyCode == Keys.Left)
+			{
+				myStorage.leftSelected();
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
+			}
+			if (e.KeyCode == Keys.Right)
+			{
+				myStorage.rightSelected(panel1.Width);
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
+			}
+			if (e.KeyCode == Keys.Up)
+			{
+				myStorage.upSelected();
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
+			}
+			if (e.KeyCode == Keys.Down)
+			{
+				myStorage.downSelected(panel1.Height);
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
+			}
+
+			if (Control.ModifierKeys == Keys.Control && e.KeyCode == Keys.Up)
+			{
+				myStorage.increaseSelected(ClientSize.Width, ClientSize.Height);
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
+			}
+
+			if (Control.ModifierKeys == Keys.Control && e.KeyCode == Keys.Down)
+			{
+				myStorage.decreaseSelected();
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
+			}
+
+			if (e.KeyCode == Keys.P)
+			{
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
+				myStorage.colorP(g);
+			}
+
+			if (e.KeyCode == Keys.O)
+			{
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
+				myStorage.colorO(g);
+			}
+
+			if (e.KeyCode == Keys.I)
+			{
+				g.Clear(colorForm);
+				myStorage.callShowMethod(g);
+				myStorage.colorI(g);
+			}
+		}
+
+        private void panel1_MouseClick(object sender, MouseEventArgs e)
+        {
 			Point click;
 			click = e.Location;
 			int choiceCircle = myStorage.checkCoord(click.X, click.Y);
@@ -48,174 +159,29 @@ namespace laba_6
 				}
 				else
 				{
-					myStorage.setCircle(g, click.X, click.Y);
+					myStorage.setCObject(g, new CCircle(click.X, click.Y));
 				}
 			}
 		}
+    }
 
-        private void Form1_Paint(object sender, PaintEventArgs e)
-		{
-			g = CreateGraphics();
-			g.Clear(colorForm);
-			myStorage.callShowMethod(g);
-		}		
-
-
-		private void Form1_KeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.KeyData == Keys.Delete)
-			{
-				myStorage.deleteSelectedObject();
-				g.Clear(colorForm);
-				myStorage.callShowMethod(g);
-			}
-
-			if (e.KeyCode == Keys.D1)
-            {
-				int X = 50, Y = 50;
-				int choiceCircle = myStorage.checkCoord(X, Y);
-
-				if (Control.ModifierKeys == Keys.Control) 
-				{
-					if (choiceCircle != -1) // попадаем в круг
-					{
-						myStorage.setSelected(choiceCircle);
-						myStorage.callShowMethod(g);
-					}
-				}
-				else
-				{
-					if (choiceCircle != -1) // попадаем в круг
-					{
-						myStorage.unSelectedObject();
-						myStorage.setSelected(choiceCircle);
-						myStorage.callShowMethod(g);
-					}
-					else
-					{
-						myStorage.setCircle(g, X, Y);
-					}
-				}				
-			}
-
-			if (e.KeyCode == Keys.Left)
-			{
-				myStorage.leftSelected();
-				g.Clear(colorForm);
-				myStorage.callShowMethod(g);
-			}
-			if (e.KeyCode == Keys.Right)
-			{
-				myStorage.rightSelected(ClientSize.Width);
-				g.Clear(colorForm);
-				myStorage.callShowMethod(g);
-			}
-			if (e.KeyCode == Keys.Up)
-			{
-				myStorage.upSelected();
-				g.Clear(colorForm);
-				myStorage.callShowMethod(g);
-			}
-			if (e.KeyCode == Keys.Down)
-			{
-				myStorage.downSelected(ClientSize.Height);
-				g.Clear(colorForm);
-				myStorage.callShowMethod(g);
-			}
-			
-			if (Control.ModifierKeys == Keys.Control && e.KeyCode == Keys.Up)
-			{
-				myStorage.increaseSelected(ClientSize.Width, ClientSize.Height);
-				g.Clear(colorForm);
-				myStorage.callShowMethod(g);
-			}
-
-			if (Control.ModifierKeys == Keys.Control && e.KeyCode == Keys.Down)
-			{
-				myStorage.decreaseSelected();
-				g.Clear(colorForm);
-				myStorage.callShowMethod(g);
-			}
-		}
-	}
-
-
-
-	public class CCircle
+    public class CObject
 	{
-		public int speed = 10;
-		public int x;
-		public int y;
-		public int r;
-		private Pen pen; // цвет контура круга
-		private bool selected; // флаг, выбрал ли объект
+		public int x, y;
+		public Pen pen; // цвет контура фигуры
+		public bool selected; // флаг, выбрал ли объект
 
-		public CCircle(int x, int y)
+		public int speed = 10; //скорость перемещения объекта
+		public Brushes brushe; // цвет фона объекта
+
+
+		public virtual void showObject(Graphics g)
+		{ }
+
+		public virtual bool checkCoord(int x, int y)
 		{
-			r = 50;
-			this.x = x - r;
-			this.y = y - r;
-			selected = true;
+			return false;
 		}
-
-		// функция, двигающая круг влево
-		public void left() 
-        {
-			if (x-speed > 0)
-			this.x = this.x - speed;
-        }
-
-		// функция, двигающая круг вправо
-		public void right(int formRight)
-		{
-			if (this.x + r + r + speed < formRight)
-				this.x = this.x + speed;
-		}
-
-		// функция, двигающая круг вверх
-		public void up()
-		{
-			if (y-speed > 0)
-			this.y = this.y - speed;
-		}
-
-		// функция, двигающая круг вниз
-		public void down(int formDown)
-		{
-			if (this.y + r + r + speed < formDown)
-				this.y = this.y + speed;
-		}
-
-		//функция, увеличивающая круг
-		public void increase(int formUpX, int formUpY)
-        {
-			if (this.x + r + r + speed < formUpX)
-				if (this.y + r + r + speed < formUpY)
-						this.r = this.r + speed;
-		}
-
-		// функция, уменьшающая круг
-		public void decrease()
-        {
-			if (this.r - speed > 0)
-				this.r = this.r - speed;
-		}
-
-		// функция рисует круг
-		public void showCircle(Graphics g)
-		{
-			if (selected)
-			{
-				pen = new Pen(Color.Red, 3);
-			}
-			else
-			{
-				pen = new Pen(Color.Black, 3);
-			}
-
-			g.DrawEllipse(pen, x, y, r + r, r + r);
-		}
-				
 
 		// помечает объект как не выбранный
 		public void unSelected()
@@ -229,15 +195,125 @@ namespace laba_6
 			selected = true;
 		}
 
-		// возвращает флаг выбранности круга
+		// возвращает флаг выбранности объекта
 		public bool isSelected()
 		{
 			return selected;
 		}
 
+		public virtual void left()
+		{
+		}
+
+		public virtual void right(int formRight) { }
+
+		public virtual void up() { }
+		public virtual void down(int formDown) { }
+		public virtual void increase(int formUpX, int formUpY) { }
+		public virtual void decrease() { }
+		public virtual void purpleObject(Graphics g)
+		{
+		}
+
+		public virtual void orangeObject(Graphics g)
+		{
+		}
+
+		public virtual void indigoObject(Graphics g)
+		{
+		}
+
+	}
+
+
+	public class CCircle : CObject
+	{
+		public int r;
+
+		public CCircle(int x, int y)
+		{
+			r = 50;
+			this.x = x - r;
+			this.y = y - r;
+			selected = true;
+		}
+
+		// функция, двигающая круг влево
+		public override void left() 
+        {
+			if (x-speed > 0)
+			this.x = this.x - speed;
+        }
+
+		// функция, двигающая круг вправо
+		public override void right(int formRight)
+		{
+			if (this.x + r + r + speed < formRight)
+				this.x = this.x + speed;
+		}
+
+		// функция, двигающая круг вверх
+		public override void up()
+		{
+			if (y-speed > 0)
+			this.y = this.y - speed;
+		}
+
+		// функция, двигающая круг вниз
+		public override void down(int formDown)
+		{
+			if (this.y + r + r + speed < formDown)
+				this.y = this.y + speed;
+		}
+
+		//функция, увеличивающая круг
+		public override void increase(int formUpX, int formUpY)
+        {
+			if (this.x + r + r + speed < formUpX)
+				if (this.y + r + r + speed < formUpY)
+						this.r = this.r + speed;
+		}
+
+		// функция, уменьшающая круг
+		public override void decrease()
+        {
+			if (this.r - speed > 0)
+				this.r = this.r - speed;
+		}
+
+		// функция рисует круг
+		public override void showObject(Graphics g)
+		{
+			if (selected)
+			{
+				pen = new Pen(Color.Red, 3);
+			}
+			else
+			{
+				pen = new Pen(Color.Black, 3);
+			}
+
+			g.DrawEllipse(pen, x, y, r + r, r + r);
+		}
+
+		public override void purpleObject(Graphics g)
+        {
+			g.FillEllipse(Brushes.Purple, x, y, r + r, r + r);
+		}
+
+		public override void orangeObject(Graphics g)
+		{
+			g.FillEllipse(Brushes.Orange, x, y, r + r, r + r);
+		}
+
+		public override void indigoObject(Graphics g)
+		{
+			g.FillEllipse(Brushes.Indigo, x, y, r + r, r + r);
+		}
+				
 		// функция проверяет кликнул ли пользователь внутрь круга, или нет
 		// возвращает true - если внутри, false - иначе
-		public bool checkCoord(int x, int y)
+		public override bool checkCoord(int x, int y)
 		{
 			int x_center = this.x + r;
 			int y_center = this.y + r;
@@ -251,12 +327,12 @@ namespace laba_6
 	class MyStorage
 	{
 		private int size;//размер массива
-		private CCircle[] storage;// хранилище
+		private CObject[] storage;// хранилище
 
 		//конструктор
 		public MyStorage(int size)
 		{
-			this.storage = new CCircle[size];
+			this.storage = new CObject[size];
 			for (int i = 0; i < size; i++)
 			{
 				this.storage[i] = null;
@@ -264,7 +340,7 @@ namespace laba_6
 			this.size = size;
 		}
 				
-		//функция, двигающая все выбранные круги влево
+		//функция, двигающая все выбранные объекты влево
 		public void leftSelected() 
 		{
 			for (int i = 0; i < size; i++)
@@ -276,7 +352,7 @@ namespace laba_6
             }
 		}
 
-		//функция, двигающая все выбранные круги вправо
+		//функция, двигающая все выбранные объекты вправо
 		public void rightSelected(int formRight)
 		{
 			for (int i = 0; i < size; i++)
@@ -288,7 +364,7 @@ namespace laba_6
 			}
 		}
 
-		//функция, двигающая все выбранные круги вверх
+		//функция, двигающая все выбранные объекты вверх
 		public void upSelected()
 		{
 			for (int i = 0; i < size; i++)
@@ -300,7 +376,7 @@ namespace laba_6
 			}
 		}
 
-		//функция, двигающая все выбранные круги вниз
+		//функция, двигающая все выбранные объекты вниз
 		public void downSelected(int formDown)
 		{
 			for (int i = 0; i < size; i++)
@@ -312,7 +388,7 @@ namespace laba_6
 			}
 		}
 
-		//функция, увеливающая все выбранные круги
+		//функция, увеливающая все выбранные объекты
 		public void increaseSelected(int formX, int formY)
 		{
 			for (int i = 0; i < size; i++)
@@ -324,7 +400,7 @@ namespace laba_6
 			}
 		}
 
-		//функция, уменьшающая все выбранные круги
+		//функция, уменьшающая все выбранные объекты
 		public void decreaseSelected()
 		{
 			for (int i = 0; i < size; i++)
@@ -358,8 +434,8 @@ namespace laba_6
 			return position;
 		}
 
-		// функция проверяет кликнул ли пользователь внутрь какого либо круга, или нет
-		// если "внутрь круга", то возвращается индекс круга
+		// функция проверяет кликнул ли пользователь внутрь какого либо объект, или нет
+		// если "внутрь объекта", то возвращается индекс объекта
 		// иначе -1
 		public int checkCoord(int x, int y)
 		{
@@ -378,46 +454,45 @@ namespace laba_6
 		}
 
 		//определяет на какую позицию добавить объект в массив
-		public void setCircle(Graphics g, int x, int y)
+		public void setCObject(Graphics g, CObject newObj)
 		{
 			int emptyPosition = getEmptyPosition();
 			if (emptyPosition == -1) // значит в массиве нет места для создания нового объекта
 			{
 				unSelectedObject();
-				setObject(size, new CCircle(x, y));
+				setObject(size, newObj);
 				callShowMethod(g);
 
 			}
 			else
 			{
 				unSelectedObject();
-				setObject(emptyPosition, new CCircle(x, y));
+				setObject(emptyPosition, newObj);
 				callShowMethod(g);
 			}
-
 		}
 
 		// добавить объект на указанную позицию
 		// если хранилище меньше, чем заданная позиция,
 		// то расширяем хранилище
-		void setObject(int position, CCircle circle)
+		void setObject(int position, CObject obj)
 		{
 			if (position < size)
 			{
-				storage[position] = circle;
+				storage[position] = obj;
 			}
 			else
 			{
 				int newSize = position + 1;
 				Array.Resize(ref storage, newSize);
-				storage[position] = circle;
+				storage[position] = obj;
 				this.size = newSize;
 			}
 
 		}
 
 		// получить объект на i-той позиции (без удаления)
-		CCircle getObject(int i)
+		CObject getObject(int i)
 		{
 			return storage[i];
 		}
@@ -449,18 +524,59 @@ namespace laba_6
 						storage[i] = null;
 					}
 				}
-
 			}
 		}
 
-		//функция проходит по всему массиву и вызывает метод showCircle у всех объектов
+		//функция проходит по всему массиву и вызывает метод showObject у всех объектов
 		public void callShowMethod(Graphics g)
 		{
 			for (int i = 0; i < size; i++)
 			{
 				if (!isEmptyPosition(i))
 				{
-					storage[i].showCircle(g);
+					storage[i].showObject(g);
+				}
+			}
+		}
+
+		public void colorP (Graphics g)
+		{
+			for (int i = 0; i < size; i++)
+			{
+				if (!isEmptyPosition(i))
+				{
+					if (storage[i].isSelected())
+					{
+						storage[i].purpleObject(g);
+					}
+				}
+			}
+		}
+
+		public void colorO(Graphics g)
+		{
+			for (int i = 0; i < size; i++)
+			{
+				if (!isEmptyPosition(i))
+				{
+					if (storage[i].isSelected())
+					{
+						storage[i].orangeObject(g);
+					}
+				}
+			}
+		}
+
+		public void colorI(Graphics g)
+		{
+			for (int i = 0; i < size; i++)
+			{
+				if (!isEmptyPosition(i))
+				{
+					if (storage[i].isSelected())
+					{
+						storage[i].indigoObject(g);
+					}
 				}
 			}
 		}
