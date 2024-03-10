@@ -24,10 +24,6 @@ namespace laba_6
 
 		}
 
-        private void Form1_MouseClick(object sender, MouseEventArgs e)
-        {
-			
-		}
 
         private void Form1_Paint(object sender, PaintEventArgs e)
 		{
@@ -53,7 +49,7 @@ namespace laba_6
 
 				if (Control.ModifierKeys == Keys.Control)
 				{
-					if (choiceCircle != -1) // попадаем в круг
+					if (choiceCircle != -1) // попадаем в объект
 					{
 						myStorage.setSelected(choiceCircle);
 						myStorage.callShowMethod(g);
@@ -61,7 +57,7 @@ namespace laba_6
 				}
 				else
 				{
-					if (choiceCircle != -1) // попадаем в круг
+					if (choiceCircle != -1) // попадаем в объект
 					{
 						myStorage.unSelectedObject();
 						myStorage.setSelected(choiceCircle);
@@ -70,6 +66,34 @@ namespace laba_6
 					else
 					{
 						myStorage.setCObject(g, new CCircle(X, Y));
+					}
+				}
+			}
+
+			if (e.KeyCode == Keys.D2)
+            {
+				int X = 0, Y = 0;
+				int choiceRectangle = myStorage.checkCoord(X, Y);
+
+				if (Control.ModifierKeys == Keys.Control)
+				{
+					if (choiceRectangle != -1) // попадаем в прямоугольник
+					{
+						myStorage.setSelected(choiceRectangle);
+						myStorage.callShowMethod(g);
+					}
+				}
+				else
+				{
+					if (choiceRectangle != -1) // попадаем в прямоугольник
+					{
+						myStorage.unSelectedObject();
+						myStorage.setSelected(choiceRectangle);
+						myStorage.callShowMethod(g);
+					}
+					else
+					{
+						myStorage.setCObject(g, new CRectangle(X, Y));
 					}
 				}
 			}
@@ -88,31 +112,37 @@ namespace laba_6
 			}
 			if (e.KeyCode == Keys.Up)
 			{
-				myStorage.upSelected();
-				g.Clear(colorForm);
-				myStorage.callShowMethod(g);
+				if (Control.ModifierKeys == Keys.Control)
+                {
+					myStorage.increaseSelected(ClientSize.Width, ClientSize.Height);
+					g.Clear(colorForm);
+					myStorage.callShowMethod(g);
+				}
+                else
+                {
+					myStorage.upSelected();
+					g.Clear(colorForm);
+					myStorage.callShowMethod(g);
+				}
+						
 			}
 			if (e.KeyCode == Keys.Down)
 			{
-				myStorage.downSelected(panel1.Height);
-				g.Clear(colorForm);
-				myStorage.callShowMethod(g);
+				if (Control.ModifierKeys == Keys.Control)
+                {
+					myStorage.decreaseSelected();
+					g.Clear(colorForm);
+					myStorage.callShowMethod(g);
+				}
+				else
+                {
+					myStorage.downSelected(panel1.Height);
+					g.Clear(colorForm);
+					myStorage.callShowMethod(g);
+				}				
 			}
 
-			if (Control.ModifierKeys == Keys.Control && e.KeyCode == Keys.Up)
-			{
-				myStorage.increaseSelected(ClientSize.Width, ClientSize.Height);
-				g.Clear(colorForm);
-				myStorage.callShowMethod(g);
-			}
-
-			if (Control.ModifierKeys == Keys.Control && e.KeyCode == Keys.Down)
-			{
-				myStorage.decreaseSelected();
-				g.Clear(colorForm);
-				myStorage.callShowMethod(g);
-			}
-
+			
 			if (e.KeyCode == Keys.P)
 			{
 				g.Clear(colorForm);
@@ -225,6 +255,108 @@ namespace laba_6
 
 	}
 
+	public class CRectangle : CObject
+	{
+		public int width, height;
+
+		public CRectangle(int x, int y)
+		{
+			width = 65;
+			height = 50;
+			this.x = x;
+			this.y = y;
+			selected = true;
+		}
+
+		// функция, двигающая прямоугольник влево
+		public override void left()
+		{
+			if (x - speed > 0)
+				x = x - speed;
+		}
+
+		// функция, двигающая прямоугольник вправо
+		public override void right(int formRight)
+		{
+			if (x + width + speed < formRight)
+				x = x + speed;
+		}
+
+		// функция, двигающая прямоугольник вверх
+		public override void up()
+		{
+			if (y - speed > 0)
+				y = y - speed;
+		}
+
+		// функция, двигающая прямоугольник вниз
+		public override void down(int formDown)
+		{
+			if (y + height + speed < formDown)
+				y = y + speed;
+		}
+
+		//функция, увеличивающая прямоугольник
+		public override void increase(int formUpX, int formUpY)
+		{
+			if (x + width + speed < formUpX)
+				if (y + height + speed < formUpY)
+                {
+					width = width + speed;
+					height = height + speed;
+				}					
+		}
+
+		// функция, уменьшающая прямоугольник
+		public override void decrease()
+		{
+			if (height - speed > 0)
+			{
+				width = width - speed;
+				height = height - speed;
+			}
+		}
+
+		// функция рисует прямоугольник
+		public override void showObject(Graphics g)
+		{
+			if (selected)
+			{
+				pen = new Pen(Color.Red, 3);
+			}
+			else
+			{
+				pen = new Pen(Color.Black, 3);
+			}
+
+			g.DrawRectangle(pen, x, y, width, height);
+		}
+
+		public override void purpleObject(Graphics g)
+		{
+			g.FillRectangle(Brushes.Purple, x, y, width, height);
+		}
+
+		public override void orangeObject(Graphics g)
+		{
+			g.FillRectangle(Brushes.Orange, x, y, width, height);
+		}
+
+		public override void indigoObject(Graphics g)
+		{
+			g.FillRectangle(Brushes.Indigo, x, y, width, height);
+		}
+
+		// функция проверяет кликнул ли пользователь внутрь прямоугольника, или нет
+		// возвращает true - если внутри, false - иначе
+		public override bool checkCoord(int x, int y)
+		{
+			bool checkY = this.y < y && this.y + height > y;
+			bool checkX = this.x < x && this.x + width > x;
+			return checkY && checkX;
+		}
+	}
+		
 
 	public class CCircle : CObject
 	{
