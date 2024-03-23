@@ -1,0 +1,12 @@
+20
+CGroup
+20
+240 100 510 350
+CCircle
+410 100 50 Thistle
+CRectangle
+300 100 105 70 Thistle
+COval
+240 240 105 60 Thistle
+CSquare
+330 300 50 Thistle
